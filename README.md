@@ -79,5 +79,3 @@ This project is licensed under the MIT License.
 - NFC - Flutter package for reading NFC tags.
 - barcode_scan - Flutter plugin for scanning QR codes.
 - Flutter - UI toolkit for building natively compiled applications for mobile, web, and desktop platforms.
-
-Please let me know if you need any further assistance!
