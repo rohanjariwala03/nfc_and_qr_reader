@@ -1,6 +1,6 @@
 # NFC and QR Reader
 
-This Flutter project is a simple application that demonstrates reading NFC tags and scanning QR codes.
+This Flutter project is a simple application that demonstrates reading NFC tags and scanning QR codes. 
 
 ## Table of Contents
 
