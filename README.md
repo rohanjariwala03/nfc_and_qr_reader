@@ -1,81 +1,51 @@
 # NFC and QR Reader
 
-This Flutter project is a simple application that demonstrates reading NFC tags and scanning QR codes. 
+A Flutter app for reading and writing NFC tags, built on the [nfc_manager](https://pub.dev/packages/nfc_manager) plugin. The plan was to add QR code scanning as well, but that part was never built. The app only does NFC.
 
-## Table of Contents
+## What it does
 
-- Getting Started
-  - Prerequisites
-  - Installation
-- Usage
-- Features
-- Contributing
-- License
-- Acknowledgements
+The home screen has one button, "Nfc Reader", which opens three tools:
 
-## Getting Started
+- Tag - Read: starts an NFC session and shows what the tag reports. That includes the identifier, the tech list, and per-technology details for NfcA, NfcB, NfcF, NfcV, IsoDep, MifareClassic and MifareUltralight. If the tag holds NDEF data, it lists each record (with a detail view), the message size and whether the tag is writable.
+- Ndef - Write: build a list of Text and URI records, edit or delete them, then write them to a tag in one session. The records are stored locally in SQLite (sqflite), so they are still there the next time you open the app.
+- Ndef - Write Lock: makes a tag read-only after a confirmation prompt. This can't be undone.
 
-To get the project up and running on your local machine, follow the instructions below.
+## Stack
 
-### Prerequisites
+- Flutter, Dart 2.19
+- nfc_manager 3.2.0 for NFC sessions
+- sqflite for the saved write records
+- provider to pass the repository down the widget tree
+- flutter_launcher_icons for the app icons in `assets/icon/`
 
-Make sure you have the following installed before proceeding:
+## Running it
 
-- Flutter SDK (version X.X.X)
-- Android Studio or Xcode (for iOS development)
-- NFC-enabled device (for testing NFC functionality)
+You need a phone with NFC. Emulators and simulators can't scan tags.
 
-### Installation
+```shell
+git clone https://github.com/rohanjariwala03/nfc_and_qr_reader.git
+cd nfc_and_qr_reader
+flutter pub get
+flutter run
+```
 
-1. Clone the repository:
+The code was written in March 2023 and built with Flutter 3.7 (Dart 2.19). It doesn't compile on current Flutter, mostly because it uses `TextTheme` names (`bodyText1`, `caption`, etc.) and `CardTheme`/`DialogTheme` types that later releases removed or renamed. Use a Flutter 3.7 SDK, or update those call sites first.
 
-   ```shell
-   git clone https://github.com/rohanjariwala03/nfc_and_qr_reader.git
+## Known gaps
 
-2. Change to the project directory:
+- The Android manifest doesn't declare `android.permission.NFC`. Add `<uses-permission android:name="android.permission.NFC" />` to `android/app/src/main/AndroidManifest.xml` before running on Android.
+- iOS isn't set up for NFC. It needs `NFCReaderUsageDescription` in `Info.plist` and the Near Field Communication Tag Reading capability in Xcode.
+- `test/widget_test.dart` is still the default counter test and references a `MyApp` class that no longer exists, so `flutter test` fails.
+- `url_launcher` and `package_info` are in `pubspec.yaml` but aren't used.
 
-    - Copy code
-    - cd nfc_and_qr_reader
-    - Install the dependencies:
-    - shell
-    - Copy code
-      flutter pub get
-    - Usage
-  
-  3. To use the NFC and QR Reader app:
-    Connect your NFC-enabled device or simulator.
-    Build and run the app using Flutter CLI or your preferred IDE.
-    
-     - Copy code
-     - flutter run
-     - On the app's home screen, you can choose between the "NFC Reader" or "QR Scanner" options.
-     - Follow the on-screen instructions to scan NFC tags or QR codes.
-     - View the scanned data and interact with the app as needed.
-  
-### Features
+## Project layout
 
-The NFC and QR Reader app includes the following features:
-
-- NFC tag reading: Scan and retrieve data from NFC tags.
-- QR code scanning: Use the device's camera to scan QR codes.
-- Simple and intuitive user interface.
- 
-### Contributing
-
-Contributions to this project are welcome. To contribute, please follow these steps:
-
-1. Fork the repository.
-2. Create a new branch.
-3. Make your changes and commit them.
-4. Push your changes to your forked repository.
-5. Submit a pull request detailing your changes.
-
-### License
-
-This project is licensed under the MIT License.
-
-### Acknowledgements
-
-- NFC - Flutter package for reading NFC tags.
-- barcode_scan - Flutter plugin for scanning QR codes.
-- Flutter - UI toolkit for building natively compiled applications for mobile, web, and desktop platforms.
+```
+lib/
+  main.dart                 entry point
+  view/app.dart             MaterialApp, providers, home screen
+  view/nfc_view/            NFC menu plus read, write and write-lock screens
+  view/common/              shared form rows and the NFC session dialog
+  repository/               Repository interface, sqflite implementation (plus an unimplemented demo stub)
+  model/                    NDEF record parsing and the WriteRecord model
+```
